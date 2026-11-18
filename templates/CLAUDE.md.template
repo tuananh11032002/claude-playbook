@@ -1,0 +1,37 @@
+<!-- MẪU: chép về gốc repo dự án mới thành CLAUDE.md, thay các chỗ <...> và bỏ dòng không hợp. Ví dụ thật: dự án ToolPack (Blazor .NET 8 offline). -->
+# <Tên dự án> — ghi nhớ cho Claude (phiên mới + agent con tự nạp file này)
+
+Hộp công cụ offline cho dev và dân văn phòng (kiểu DevToys / PowerToys): Blazor Server .NET 8, đóng gói self-contained, chạy trên máy không có mạng.
+
+@docs/agent-doc-nhanh.md   <!-- trang đọc nhanh 1 trang, mẫu: templates/agent-quick-doc.md -->
+
+## Cách làm việc với user
+- Trả lời và viết chữ cho người dùng bằng **tiếng Việt có dấu**, dễ hiểu, ưu tiên **bảng**, tránh lý thuyết dài. Sơ đồ trong code block chỉ dùng ký tự ASCII.
+- **Tính năng mới / ý tưởng lớn: trình bày khả thi + kế hoạch, chờ user chốt rồi mới code.** Sửa lỗi, chỉnh giao diện nhỏ thì làm luôn.
+- **Tiết kiệm token**: việc nhỏ / vừa thì TỰ LÀM, không sinh agent. Chỉ sinh agent (loại `toolpack-dev`, Sonnet) cho màn mới lớn cần chạy song song. Chụp ảnh 1920 sáng là đủ; test phần vừa sửa (`kiem-nhanh.ps1 -Loc`), cả bộ chỉ 1 lần trước khi gộp.
+- Thay đổi chưa commit lạ trong repo = có thể user đang sửa → HỎI trước, không stash / checkout / đè.
+- App thừa (bản cũ, bản tạm mình mở để chụp) chặn việc thì tự tắt rồi báo; phiên debug của user (`src\ToolPack.Web\bin\Debug`) thì hỏi.
+- Không push (bị chặn quyền) — nhắc user `git push`. Không đưa email / tên công ty / đường dẫn nội bộ vào repo.
+
+## Bẫy đã gặp (đọc trước khi sửa)
+| Bẫy | Cách tránh |
+|---|---|
+| User đang debug → `src/ToolPack.Web/bin` bị khoá | Build ra chỗ khác: `dotnet build src\ToolPack.Web\ToolPack.Web.csproj -o "$env:TEMP\claude\tp-build-check"`; test: `dotnet test tests\ToolPack.Core.Tests` |
+| Xem giao diện khi user đang debug | Chạy exe của bản build tạm với `--no-browser --urls http://127.0.0.1:<cổng riêng>`, đặt `TOOLPACK_DB`, `TOOLPACK_LOCALAPPDATA`, `TOOLPACK_QUAN_TRI` vào thư mục tạm, `ASPNETCORE_ENVIRONMENT=Development`. CSS trong `wwwroot` đổi là thấy; `.razor.css` (scoped) phải build lại |
+| Playwright báo thiếu trình duyệt | `p.chromium.launch(channel="chrome")` |
+| Kiểu xuống dòng bị lật (CRLF↔LF) làm diff phình | Giữ EOL của file; trước commit so `git diff --stat` với `git diff --ignore-cr-at-eol --stat` |
+| PowerShell `Out-File` / `Set-Content` làm hỏng UTF-8 | Ghi file bằng Python / công cụ Write; script `.ps1` có tiếng Việt phải có BOM |
+| Biến Razor trùng chỉ thị (`section`, `page`, `code`…) → lỗi RZ2005 | Đặt tên khác (`menuSection`) |
+| `.input` đặt `font: inherit` | `.input.mono` phải nhắc lại font-family |
+| Windows chặn chạy exe trong `%TEMP%` (kiem-tra-goi.ps1 "Access is denied") | Kiểm thẳng `dist\ToolPack` |
+| VS Code tự tạo lại csproj / slnx tên cũ GeoPack | Sau khi gộp xem `git status`, `git diff -- *.csproj` |
+| Test chập chờn khi chạy cả bộ (đo thời gian, khoá file) | Chạy riêng test đó; đạt thì ghi chú, không sửa bừa |
+
+## Bản đồ nhanh
+- Menu / màn: `Services/ToolCatalog.cs` (nhóm có `Tone` màu, `IconToneOf` màu icon từng công cụ — màn mới nhớ gán). Help: `Services/ScreenHelp.cs`. DI: khối đánh dấu trong `Program.cs`.
+- Quản trị (bật/tắt chức năng, thời hạn, tạo bản cho người khác): `ToolPack.Core/QuanTri`, trang `/quan-tri`, file `quan-tri.json` cạnh exe, mật khẩu mặc định `abc`.
+- Dữ liệu người dùng: `%LOCALAPPDATA%\ToolPack` (CSDL `toolpack.db`, mật khẩu DB mã hoá DPAPI — không bao giờ in ra).
+- Đóng gói: `tools\dong-goi.ps1` → `dist\ToolPack-net8.zip` (xem `docs/dong-goi.md`).
+
+## Lead gộp nhánh (khi có agent)
+Worktree `D:\repos\Temp\gp-wt\<việc>`, nhánh `feat/<việc>`; lead xem 1–2 ảnh, `git merge --no-ff`, kiểm EOL, build + test, `codegraph sync .`.

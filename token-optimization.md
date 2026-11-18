@@ -45,3 +45,19 @@ Một trang, gồm: ngăn xếp công nghệ, cấu trúc thư mục, cách tìm
 ## Lỗi "file bị khoá" khi build
 
 Thường là người dùng đang mở app. Build ở worktree riêng, không tắt app của họ.
+
+## Đo chi phí thật và cách cắt (bài học 18/11/2026)
+
+| Hiểu nhầm | Thực tế |
+|---|---|
+| "289k tokens in context" = đã tiêu 289k | Đó là ĐỘ DÀI NGỮ CẢNH hiện tại. Chi phí ≈ độ dài ngữ cảnh × số lần gọi model (phần lặp lại tính giá cache ≈ 1/10) |
+| Tự làm luôn rẻ hơn sinh agent | Chỉ đúng khi ngữ cảnh phiên chính còn ngắn. Phiên dài nhiều ngày thì mỗi lần gọi công cụ cũng đắt |
+
+Số đo 1 phiên 6 ngày (ToolPack): phiên chính 1.062 lần gọi, 55 agent con 5.329 lần gọi → agent con ≈ 80% chi phí.
+Đo lại bằng cách cộng `usage` (input / cache_creation / cache_read / output) theo `message.id` trong `~/.claude/projects/<dự án>/<phiên>.jsonl` và thư mục `subagents/`.
+
+Cắt chi phí theo thứ tự hiệu quả:
+1. Có `CLAUDE.md` ở gốc repo (mẫu `templates/CLAUDE.md.template`): phiên mới + agent con tự nạp quy tắc, bẫy, lệnh build/test → không phải dò lại dự án.
+2. Mở phiên mới khi xong một giai đoạn (ghi tóm tắt vào memory trước).
+3. Việc nhỏ / vừa tự làm; chỉ sinh agent cho việc lớn cần song song, dùng loại agent riêng (mẫu `templates/agents/dev-agent.md`, model Sonnet).
+4. Agent: chụp 1 cỡ ảnh, test phần mình, cả bộ 1 lần cuối, báo cáo < 250 chữ. "Fork" (agent kế thừa toàn bộ ngữ cảnh) chỉ dùng đầu phiên khi ngữ cảnh còn ngắn — luôn chạy model đắt.
