@@ -53,3 +53,9 @@ Mục tiêu: tối đa vùng dữ liệu, mượt với hàng triệu dòng.
 ## Việc nền và huỷ
 
 Mỗi việc nền có `CancellationToken`, nút Huỷ, và dòng chữ trạng thái cụ thể. Đổi input thì huỷ việc cũ trước khi chạy việc mới. Cập nhật giao diện từ luồng nền qua `InvokeAsync`, nhưng chỉ sau khi chắc chắn không giữ khoá nào mà `InvokeAsync` cần.
+
+## Tên biến cấm trong file .razor
+
+| Bẫy | Cách tránh |
+|---|---|
+| Đặt biến `section` rồi viết `@section.Label`: Razor của Visual Studio hiểu `@section` là directive, báo RZ2005/RZ1011 (`dotnet build` vẫn qua nên dễ lọt) | Không đặt biến trùng từ khoá Razor: `section`, `page`, `code`, `inject`, `model`, `layout`... Dùng tên rõ nghĩa: `menuSection` |
