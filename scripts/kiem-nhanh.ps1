@@ -19,7 +19,9 @@ $root = Split-Path -Parent $PSScriptRoot
 function Find-Solution {
     param([string]$Explicit, [string]$Root)
     if ($Explicit) { return $Explicit }
-    $found = Get-ChildItem -Path $Root -Include *.sln, *.slnx -File -Recurse -Depth 1 | Select-Object -First 1
+    # Ưu tiên solution có trong git: IDE hay tự tạo lại file .sln/.slnx tên cũ (chưa track) sau khi đổi tên dự án.
+    $tracked = git -C $Root ls-files -- '*.slnx' '*.sln' 2>$null | Select-Object -First 1
+    $found = if ($tracked) { Get-Item (Join-Path $Root $tracked) } else { Get-ChildItem -Path $Root -Include *.sln, *.slnx -File -Recurse -Depth 1 | Select-Object -First 1 }
     if (-not $found) { Write-Host "Không tìm thấy file .sln / .slnx dưới $Root (dùng -Giai để chỉ rõ)."; exit 2 }
     return $found.FullName
 }
@@ -46,7 +48,7 @@ function Show-TestSummary {
         $messages = $Lines | Where-Object { $_ -match '^\s*(Assert\.|Expected|Actual|System\.\w+Exception)' }
         $messages | Select-Object -First 10 | ForEach-Object { Write-Host ("    " + $_.Trim()) }
     }
-    $summary = $Lines | Where-Object { $_ -match '(Passed|Failed)!\s+-' }
+    $summary = $Lines | Where-Object { $_ -match '(Passed|Failed)!\s+-' -or $_ -match '^\s*(Total tests|Passed|Failed|Skipped):\s*\d' }
     if ($summary) { $summary | ForEach-Object { Write-Host $_.Trim() } }
     else { Write-Host "Không thấy dòng tổng kết test: xem lại lệnh / bộ lọc." }
 }
@@ -57,7 +59,8 @@ $buildLines = & dotnet build $solution -nologo -v q -clp:ErrorsOnly 2>&1 | ForEa
 $built = Show-BuildErrors -Lines $buildLines
 if (-not $built -or $ChiBuild) { return }
 
-$testArgs = @('test', $solution, '--no-build', '--nologo', '-v', 'q')
+# Logger console mức normal mới in tên test hỏng; Show-TestSummary chỉ lọc dòng cần.
+$testArgs = @('test', $solution, '--no-build', '--nologo', '--logger', 'console;verbosity=normal')
 if ($Loc) { $testArgs += @('--filter', "FullyQualifiedName~$Loc") }
 $testLines = & dotnet @testArgs 2>&1 | ForEach-Object { "$_" }
 Show-TestSummary -Lines $testLines

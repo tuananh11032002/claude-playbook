@@ -10,6 +10,8 @@ Những lỗi đã dính thật. Đọc trước khi dùng git nhiều nhánh, v
 | `__pycache__` bị commit | KHÔNG BAO GIỜ commit; thêm `__pycache__/` và `*.pyc` vào `.gitignore` từ đầu |
 | Xung đột add/add với trang giữ chỗ | Giữ bản của nhánh tính năng |
 | Extension C# của VS Code âm thầm sửa `.csproj` (mất ProjectReference) | Sau mỗi merge chạy `git diff -- *.csproj` |
+| Đổi tên dự án xong, VS Code (đang mở solution cũ) tự tạo lại `.csproj` / `.slnx` tên cũ (chưa track) | Đóng và mở lại VS Code sau khi đổi tên; script build chỉ chọn solution có trong git (`git ls-files *.slnx`); xoá file rác chưa track |
+| `dotnet test -v q` không in tên test hỏng | Dùng `--logger "console;verbosity=normal"` rồi lọc dòng `Failed ` và dòng tổng kết |
 | Mỗi git worktree tốn ~1 GB (bin / obj) | Xoá worktree sau khi gộp: `git worktree remove` rồi `git worktree prune` |
 | Thư mục hàng loạt chưa theo dõi (bin, dist, dữ liệu) | `.gitignore` trước commit đầu |
 
