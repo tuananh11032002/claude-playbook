@@ -16,6 +16,7 @@ Sổ tay kinh nghiệm để Claude đọc ở đầu mỗi dự án mới, kh�
 |---|---|
 | `user-preferences.md` | Luôn đọc đầu tiên: cách người dùng muốn được trả lời, viết tài liệu, ra quyết định |
 | `ui-design-principles.md` | Thiết kế giao diện cho tool nội bộ / desktop-style |
+| `android-ui-notes.md` | Làm giao diện app Android: quy trình bản vẽ → duyệt → nhánh, quy tắc màn hình, màu, bảng nổi (overlay), bẫy thử máy ảo / máy thật |
 | `ui-review-checklist.md` | Chấm một màn hình PASS / CHƯA PASS (mã G/Q/T/L/M) |
 | `ux-behaviors.md` | Hành vi chuẩn: tải dần, bàn phím, thông báo, trạng thái, mất kết nối |
 | `help-writing.md` | Viết hướng dẫn, bài học, tài liệu cho người đọc |
