@@ -37,6 +37,7 @@
 | Vùng chạm đủ lớn | Điện thoại ≥ 48dp |
 | Nút không nhảy chỗ | Khi đổi trạng thái, nút cũ đứng yên, nút mới mọc ra ngoài; nút vừa đổi nghĩa thì khóa chạm ~150 ms để tránh bấm theo quán tính |
 | Phản hồi ngay | Vẽ lại ngay khi bấm (≤ 150 ms), không đợi nhịp cập nhật định kỳ |
+| Bấm không làm bố cục nhảy | Chữ trạng thái đổi theo thao tác giữ chiều cao cố định (1 dòng + "…"); chữ cạnh công tắc / nút có bề rộng cố định; phần hiện / ẩn dùng chuyển cảnh ngắn; số chạy dùng font số đều. Người dùng rất khó chịu khi cả màn "đôn lên đôn xuống" |
 | Không có thao tác ẩn | Nhấn giữ, vuốt bí mật mà không có gợi ý thì coi như không tồn tại; đổi thành chạm dòng / nút rõ |
 | Xóa | Cho Hoàn tác thay vì hỏi lại; việc thật sự nguy hiểm thì đỏ, nằm riêng ở cuối, hỏi lại |
 | Thông số theo lựa chọn | Nằm ngay dưới lựa chọn đó, chỉ hiện của lựa chọn đang chọn |
